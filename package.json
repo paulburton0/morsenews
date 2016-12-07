@@ -1,0 +1,19 @@
+{
+  "name": "morsenews",
+  "version": "0.0.1",
+  "description": "Grabs titles from an RSS feed and turns them into morse code in WAV files.",
+  "main": "morsenews",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Paul Burton",
+  "license": "ISC",
+  "dependencies": {
+    "feed-read": "0.0.1",
+    "morsecodify": "0.0.2"
+  },
+  "repository" : {
+      "type" : "git",
+      "url" : "https://github.com/paulburton0/morsenews.git"
+  }
+}
