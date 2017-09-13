@@ -1,6 +1,6 @@
 {
   "name": "morsenews",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Grabs titles from an RSS feed and turns them into morse code in WAV files.",
   "main": "morsenews",
   "scripts": {
@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "feed-read": "0.0.1",
-    "morsecodify": "0.0.6"
+    "morsecodify": "0.0.8"
   },
   "repository": {
     "type": "git",
