@@ -7,13 +7,19 @@ var fs = require('fs');
 
 // Add the URL of whatever RSS feed you want.
 //var feedUrl = 'http://feeds.washingtonpost.com/rss/world';
-var feedUrl = 'http://feeds.washingtonpost.com/rss/national';
-var filesLocation = '/var/www/html/morse/'; // The location on the local filesystem to store the generated files.
-var playlistLocation = 'https://soren625.duckdns.org:442/morse/'; // The location to add to the playlist file (e.g. if you want to serve the files from a webserver).
-var toneFreq = 800;
-var wpm = 18;
-var farnsworth = 3;
+//var feedUrl = 'http://feeds.washingtonpost.com/rss/national';
+//var feedUrl = 'http://feeds.abcnews.com/abcnews/topstories';
+//var feedUrl = 'https://www.wired.com/feed/rss';
+//var feedUrl = 'http://rss.slashdot.org/Slashdot/slashdotMain';
+var feedUrl = 'http://www.arrl.org/news/rss';
 
+
+var filesLocation = '/var/www/html/morse/'; // The location on the local filesystem to store the generated files.
+var playlistLocation = 'https://soren625.duckdns.org:444/morse/'; // The location to add to the playlist file (e.g. if you want to serve the files from a webserver).
+var toneFreq = 800;
+var wpm = 17;
+var farnsworth = 15;
+var titleName = true; // If you want to use the headline text as the title in the playlist, set this to 'true'.
 
 var playList = '#EXTM3U\n';
 
@@ -24,13 +30,18 @@ feed(feedUrl, function(err, articles){
             if(err){
                 console.error(err);
             } else {
-                var fileName = 'story' + i + '.wav';
+                var fileName = 'story' + (i < 10 ? '0' + i : i) + '.wav';
                 fs.writeFile(filesLocation + fileName, codeBuffer, function(err){
                     iterator--;
                     if(err){
                         console.error(err);
                     }
-                    playList += '#EXTINF:0,' + translated + '\n' + playlistLocation + fileName + '\n';
+                    if(titleName){
+                        playList += '#EXTINF:0,,' + translated + '\n' + playlistLocation + fileName + '\n';
+                    }
+                    else{
+                        playList += '#EXTINF:0,,' + fileName + '\n' + playlistLocation + fileName + '\n';
+                    }
                     if(!iterator){
                         fs.writeFile(filesLocation + 'news.m3u', playList, function(err){
                             if(err){
