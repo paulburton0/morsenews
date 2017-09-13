@@ -12,8 +12,6 @@ var fs = require('fs');
 //var feedUrl = 'https://www.wired.com/feed/rss';
 //var feedUrl = 'http://rss.slashdot.org/Slashdot/slashdotMain';
 var feedUrl = 'http://www.arrl.org/news/rss';
-
-
 var filesLocation = '/var/www/html/morse/'; // The location on the local filesystem to store the generated files.
 var playlistLocation = 'https://soren625.duckdns.org:444/morse/'; // The location to add to the playlist file (e.g. if you want to serve the files from a webserver).
 var toneFreq = 800;
