@@ -1,6 +1,6 @@
 {
   "name": "morsenews",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Grabs titles from an RSS feed and turns them into morse code in WAV files.",
   "main": "morsenews",
   "scripts": {
