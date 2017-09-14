@@ -8,10 +8,10 @@ var fs = require('fs');
 // Add the URL of whatever RSS feed you want.
 //var feedUrl = 'http://feeds.washingtonpost.com/rss/world';
 //var feedUrl = 'http://feeds.washingtonpost.com/rss/national';
-//var feedUrl = 'http://feeds.abcnews.com/abcnews/topstories';
+var feedUrl = 'http://feeds.abcnews.com/abcnews/topstories';
 //var feedUrl = 'https://www.wired.com/feed/rss';
 //var feedUrl = 'http://rss.slashdot.org/Slashdot/slashdotMain';
-var feedUrl = 'http://www.arrl.org/news/rss';
+//var feedUrl = 'http://www.arrl.org/news/rss';
 var filesLocation = '/var/www/html/morse/'; // The location on the local filesystem to store the generated files.
 var playlistLocation = 'https://soren625.duckdns.org:444/morse/'; // The location to add to the playlist file (e.g. if you want to serve the files from a webserver).
 var toneFreq = 800;
@@ -19,12 +19,19 @@ var wpm = 17;
 var farnsworth = 15;
 var titleName = false; // If you want to use the headline text as the title in the playlist, set this to 'true'.
 
+var replaceChars = new Array(
+                             ' $', ' usd ', 
+                             '% ', ' pct ', 
+                             ' & ', ' es ', 
+                             ' # ', ' nr ',
+                             ' and ', ' es '
+                             );
 var playList = '#EXTM3U\n';
 
 feed(feedUrl, function(err, articles){
     if(err) console.error('There was an error: %s', err);
     for (var i = 0, iterator = articles.length; i < articles.length; i++) {
-        morse.codify(toneFreq, wpm, farnsworth, articles[i].title+' =', function(err, codeBuffer, translated){
+        morse.codify(toneFreq, wpm, farnsworth, articles[i].title+' =', replaceChars, function(err, codeBuffer, translated){
             if(err){
                 console.error(err);
             } else {
