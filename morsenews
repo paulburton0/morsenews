@@ -5,20 +5,46 @@ var feed = require('feed-read');
 var morse = require('morsecodify');
 var fs = require('fs');
 
-// Add the URL of whatever RSS feed you want.
-//var feedUrl = 'http://feeds.washingtonpost.com/rss/world';
-//var feedUrl = 'http://feeds.washingtonpost.com/rss/national';
-var feedUrl = 'http://feeds.abcnews.com/abcnews/topstories';
-//var feedUrl = 'https://www.wired.com/feed/rss';
-//var feedUrl = 'http://rss.slashdot.org/Slashdot/slashdotMain';
-//var feedUrl = 'http://www.arrl.org/news/rss';
-var filesLocation = '/var/www/html/morse/'; // The location on the local filesystem to store the generated files.
-var playlistLocation = 'https://soren625.duckdns.org:444/morse/'; // The location to add to the playlist file (e.g. if you want to serve the files from a webserver).
-var toneFreq = 800;
-var wpm = 17;
-var farnsworth = 15;
-var titleName = false; // If you want to use the headline text as the title in the playlist, set this to 'true'.
+const commandLineArgs = require('command-line-args');
 
+const optionDefinitions = [
+    { name: 'feedurl', alias: 'e', type: String},
+    { name: 'sidetone', alias: 't', type: Number, defaultValue: 800},
+    { name: 'wpm', alias: 's', type: Number, defaultValue: 18},
+    { name: 'farnsworth', alias: 'f', type: Number, defaultValue: 7},
+    { name: 'outputdir', alias: 'o', type: String},
+    { name: 'playlisturl', alias: 'p', type: String},
+    { name: 'help', alias: 'h', type: Boolean},
+    { name: 'showtitles', alias: 'r', type: Boolean, defaultValue: false}
+];
+
+const options = commandLineArgs(optionDefinitions);
+
+function showHelp(){
+    console.log('Usage: node morsenews -s 10 -t 800 -e "http://www.arrl.org/news/rss" -o "/var/www/html/morse/" -p "http://example.com/morse/"');
+    console.log('\nOptions');
+    console.log('--feedurl -e         Feed URL to fetch and convert headlines to morse code.');
+    console.log('--sidetone -t     Sets the tone frequency. Default is 800.');
+    console.log('--wpm -s          Sets the speed in wpm. Default is 18.');
+    console.log('--farnsworth -f   Sets the Farnsworth timing (space between characters and words) in wpm. Default is 10.');
+    console.log('--outputdir -o   The directory to save the generated .wav files to.');
+    console.log('--playlisturl -p  The URL to prepend to the playlist file location.');
+    console.log('--showtitles -r  Shows the translated text for each headline as the track title in the playlist');
+    process.exit();
+}
+
+if(options.help){
+    showHelp();
+    process.exit();
+}
+
+var feedUrl = options.feedurl;
+var filesLocation = options.outputdir;
+var playlistLocation = options.playlisturl
+var toneFreq = options.sidetone;
+var wpm = options.wpm;
+var farnsworth = options.farnsworth;
+var titleName = options.showtitles;
 var replaceChars = new Array(
                              ' $', ' usd ', 
                              '% ', ' pct ', 
@@ -26,22 +52,20 @@ var replaceChars = new Array(
                              ' # ', ' nr ',
                              ' and ', ' es '
                              );
+
 var playList = '#EXTM3U\n';
 
 feed(feedUrl, function(err, articles){
-    if(err) console.error('There was an error: %s', err);
+    if(err) console.error(err);
     for (var i = 0, iterator = articles.length; i < articles.length; i++) {
         morse.codify(toneFreq, wpm, farnsworth, articles[i].title+' =', replaceChars, function(err, codeBuffer, translated){
-            if(err){
-                console.error(err);
-            } else {
+            if(err) console.error(err);
+            else {
                 var storyNum = i < 10 ? '0' + i : i;
                 var fileName = 'story' + storyNum + '.wav';
                 fs.writeFile(filesLocation + fileName, codeBuffer, function(err){
                     iterator--;
-                    if(err){
-                        console.error(err);
-                    }
+                    if(err) console.error(err);
                     if(titleName){
                         playList += '#EXTINF:0,,' + translated + '\n' + playlistLocation + fileName + '\n';
                     }
@@ -50,9 +74,7 @@ feed(feedUrl, function(err, articles){
                     }
                     if(!iterator){
                         fs.writeFile(filesLocation + 'news.m3u', playList, function(err){
-                            if(err){
-                                console.error(err);
-                            }
+                            if(err) console.error(err);
                         });
                     }
                 });
@@ -60,5 +82,3 @@ feed(feedUrl, function(err, articles){
         });
     }
 });
-
-
