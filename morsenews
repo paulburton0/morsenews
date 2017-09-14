@@ -17,7 +17,7 @@ var playlistLocation = 'https://soren625.duckdns.org:444/morse/'; // The locatio
 var toneFreq = 800;
 var wpm = 17;
 var farnsworth = 15;
-var titleName = true; // If you want to use the headline text as the title in the playlist, set this to 'true'.
+var titleName = false; // If you want to use the headline text as the title in the playlist, set this to 'true'.
 
 var playList = '#EXTM3U\n';
 
@@ -28,7 +28,8 @@ feed(feedUrl, function(err, articles){
             if(err){
                 console.error(err);
             } else {
-                var fileName = 'story' + (i < 10 ? '0' + i : i) + '.wav';
+                var storyNum = i < 10 ? '0' + i : i;
+                var fileName = 'story' + storyNum + '.wav';
                 fs.writeFile(filesLocation + fileName, codeBuffer, function(err){
                     iterator--;
                     if(err){
@@ -38,7 +39,7 @@ feed(feedUrl, function(err, articles){
                         playList += '#EXTINF:0,,' + translated + '\n' + playlistLocation + fileName + '\n';
                     }
                     else{
-                        playList += '#EXTINF:0,,' + fileName + '\n' + playlistLocation + fileName + '\n';
+                        playList += '#EXTINF:0,,' + 'Story ' + storyNum + '\n' + playlistLocation + fileName + '\n';
                     }
                     if(!iterator){
                         fs.writeFile(filesLocation + 'news.m3u', playList, function(err){
